@@ -11,6 +11,12 @@ export const getPhotoSchema: Schema = {
       errorMessage: 'maxCount is a required field',
     },
   },
+  page: {
+    isInt: true,
+    exists: {
+      errorMessage: 'page is a required field',
+    },
+  },
 };
 
 export const getAlbumSchema: Schema = {

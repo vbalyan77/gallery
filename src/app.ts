@@ -8,7 +8,7 @@ import 'dotenv/config';
 const app: Application = express();
 const port: any = 3000 || process.env.PORT;
 
-//mongoose.connect(''); Insert yout connection uri
+// mongoose.connect(''); Insert your connection uri
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 

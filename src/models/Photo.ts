@@ -1,11 +1,12 @@
 import { Schema, model, Types } from 'mongoose';
 
-interface PhotoInterface {
+export interface PhotoInterface {
   albumId: any;
   title: string;
   url: string;
   thumbnailUrl: string;
   owner: any;
+  _id?: string;
 }
 
 const photoSchema = new Schema<PhotoInterface>(

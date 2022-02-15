@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Photo } from '../models/Photo';
+import { Photo, PhotoInterface } from '../models/Photo';
 import { Album, AlbumInterface } from '../models/Album';
 import { User, UserInterface } from '../models/User';
 import { catchAsync } from '../utils/catchAsync';
@@ -26,18 +26,25 @@ export const loadPhotos = catchAsync(
 
 export const getPhotos = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { ownerId, maxCount } = req.body;
-    type paramObj = {
-      owner?: string;
-    };
-    const params: paramObj = {};
+    const { ownerId, maxCount, page } = req.body;
+
     if (ownerId) {
       let user: UserInterface | null = await User.findById(ownerId);
       if (!user) return res.status(404).json({ message: 'User not found' });
-
-      params.owner = ownerId;
     }
-    const photos = await Photo.find(params).limit(Number(maxCount));
+    const query: any = { $and: [{ owner: { $eq: ownerId } }] };
+    let photos: Array<any>;
+    if (page <= 1) {
+      photos = await Photo.find(query).limit(Number(maxCount));
+    } else {
+      photos = await Photo.find(query).limit(
+        Number(maxCount) * (Number(page) - 1)
+      );
+      const lastId: any = photos[photos.length - 1]._id;
+      query['$and'].push({ _id: { $gt: lastId } });
+      photos = await Photo.find(query).limit(Number(maxCount));
+    }
+
     res.status(200).json({ message: 'Photos', data: photos });
   }
 );
